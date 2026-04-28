@@ -180,18 +180,20 @@
 </head>
 <body> 
     
-   <!-- 📍 ВЕРТИКАЛЬНИЙ БАНЕР (Не штовхає Ko-fi, гортається зі сторінкою) -->
-<div id="left-vertical-ad" class="adsterra-banner" style="
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    z-index: 1000;
-    width: 160px; /* Фіксуємо ширину банера */
-">
-    <script>
-      atOptions = { 'key' : '92a27733420db52bddb381b5886cd5f8', 'format' : 'iframe', 'height' : 300, 'width' : 160, 'params' : {} };
-    </script>
-    <script src="https://daubwhereupon.com/92a27733420db52bddb381b5886cd5f8/invoke.js"></script>
+    <!-- Обгортка нульової ширини (не штовхає контент) -->
+<div style="position: relative; width: 0; height: 0; float: left;">
+    <div id="left-vertical-ad" class="adsterra-banner" style="
+        position: sticky;
+        top: 100px;
+        left: 0;
+        width: 160px;
+        z-index: 1000;
+    ">
+        <script>
+          atOptions = { 'key' : '92a27733420db52bddb381b5886cd5f8', 'format' : 'iframe', 'height' : 300, 'width' : 160, 'params' : {} };
+        </script>
+        <script src="https://daubwhereupon.com/92a27733420db52bddb381b5886cd5f8/invoke.js"></script>
+    </div>
 </div>
         
     <!-- Top Ko-fi Button (Animated) -->
