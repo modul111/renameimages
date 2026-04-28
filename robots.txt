@@ -1,0 +1,10 @@
+User-agent: *
+Disallow: /uploads/
+Disallow: /private/
+Allow: /
+
+# Sitemap
+Sitemap: https://renameimages.onrender.com/sitemap.xml
+
+# Crawl-delay
+Crawl-delay: 1

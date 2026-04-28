@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO Optimization -->
+    <meta name="description" content="Professional tool to rename images with unique names (Modern, Classic, Vintage, Unique, Popular). Batch rename up to 500 files, clean metadata (EXIF/GPS), and convert to PNG. No duplicates guaranteed.">
+    <meta name="keywords" content="image renamer, batch rename, modern names, classic names, vintage names, remove metadata, exif cleaner, privacy tool, random name generator, no duplicates, photo organizer">
+    <meta name="author" content="Name Generator Pro">
+    <meta name="robots" content="index, follow">
+    <meta property="og:title" content="Image Renamer Pro - Unique Names & Metadata Cleaner">
+    <meta property="og:description" content="Rename your images with unique character names. Clean metadata and ensure privacy. Works offline. No duplicates.">
+    <meta property="og:type" content="website">
+
+    <title>Image Renamer Pro - Unique Names & Metadata Cleaner</title>
+
+    <!-- Favicon (inline SVG data URI) -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://w3.org viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📷</text></svg>">
+
+    <!-- Google Fonts (Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Ko-fi Widget -->
+    <script type='text/javascript' src='https://storage.ko-fi.com/cdn/widget/Widget_2.js'></script>
+    
+    <!-- JSZip for downloading files -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    
+    <!-- ✅ Adsterra Popunder (в head) -->
+    <script src="https://daubwhereupon.com/7f/96/b8/7f96b8ac2e61724bf429f964867670e1.js"></script>
+    
+    <style>
+        :root {
+            --primary: #667eea; --secondary: #764ba2; --accent: #f093fb;
+            --success: #4caf50; --warning: #ff9800; --danger: #e74c3c;
+            --dark: #2d3748; --light: #f8f9fa;
+            --gradient: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            --shadow: 0 10px 40px rgba(0,0,0,0.2); --radius: 20px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--gradient); min-height: 100vh; padding: 20px; color: var(--dark); line-height: 1.6; }
+        
+        /* Ko-fi Animation */
+        @keyframes pulse-kofi {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(245, 115, 189, 0.7); }
+            70% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(245, 115, 189, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(245, 115, 189, 0); }
+        }
+        #kofi-widget-container-top {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 25px;
+            width: fit-content;
+            max-width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+            position: relative;
+            z-index: 100;
+            animation: pulse-kofi 2.5s infinite ease-in-out;
+            border-radius: 30px;
+            padding: 5px;
+        }
+        
+        .kofi-section-bottom {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px dashed rgba(255,255,255,0.3);
+        }
+        .kofi-container-bottom {
+            display: inline-block;
+            animation: pulse-kofi 2.5s infinite ease-in-out;
+            border-radius: 30px;
+            padding: 5px;
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; }
+        header { text-align: center; color: white; margin-bottom: 40px; padding: 30px 20px; background: rgba(255,255,255,0.1); border-radius: var(--radius); backdrop-filter: blur(10px); }
+        header h1 { font-size: 3em; margin-bottom: 10px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); background: linear-gradient(to right, #fff, #e0e7ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        header p { font-size: 1.2em; opacity: 0.95; max-width: 800px; margin: 0 auto; }
+        header .version { display: inline-block; background: rgba(255,255,255,0.2); padding: 5px 15px; border-radius: 20px; font-size: 0.9em; margin-top: 15px; }
+        
+        .tab-content { background: white; border-radius: var(--radius); padding: 40px; box-shadow: var(--shadow); animation: fadeIn 0.5s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        
+        h2 { color: var(--primary); margin-bottom: 25px; font-size: 2.2em; display: flex; align-items: center; gap: 10px; }
+        h2::before { content: ''; width: 4px; height: 28px; background: var(--gradient); border-radius: 2px; }
+        
+        .options { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 25px; }
+        .option-group { background: var(--light); padding: 20px; border-radius: 12px; border: 2px solid #e2e8f0; transition: border-color 0.3s; }
+        .option-group:hover { border-color: var(--primary); }
+        .option-group label { display: block; margin-bottom: 10px; color: var(--dark); font-weight: 600; font-size: 0.95em; }
+        select, input[type="number"], input[type="text"] { width: 100%; padding: 12px 15px; border: 2px solid #ddd; border-radius: 8px; font-size: 1em; transition: border-color 0.3s; background: white; }
+        select:focus, input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1); }
+        
+        .button-group { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin: 25px 0; }
+        .generate-btn { background: var(--gradient); color: white; border: none; padding: 16px 45px; font-size: 1.15em; border-radius: 30px; cursor: pointer; font-weight: 600; transition: all 0.3s; display: inline-flex; align-items: center; gap: 10px; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4); }
+        .generate-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6); }
+        
+        .download-btn { background: linear-gradient(135deg, var(--accent) 0%, #f5576c 100%); }
+        .download-btn:hover { box-shadow: 0 10px 25px rgba(240, 147, 251, 0.5); }
+        .rename-all-btn { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+        .rename-all-btn:hover { box-shadow: 0 10px 25px rgba(79, 172, 254, 0.5); }
+        .clean-metadata-btn { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
+        .clean-metadata-btn:hover { box-shadow: 0 10px 25px rgba(17, 153, 142, 0.5); }
+        
+        .file-upload { border: 3px dashed var(--primary); padding: 50px 30px; text-align: center; border-radius: 16px; margin-bottom: 25px; cursor: pointer; transition: all 0.3s; background: linear-gradient(135deg, rgba(102,126,234,0.05) 0%, rgba(118,75,162,0.05) 100%); position: relative; z-index: 1; }
+        .file-upload:hover { background: rgba(102,126,234,0.1); border-color: var(--secondary); transform: scale(1.02); }
+        .file-upload.dragover { background: rgba(102,126,234,0.15); border-color: var(--secondary); box-shadow: 0 0 20px rgba(102, 126, 234, 0.3); }
+        .file-upload input[type="file"] { position: absolute; width: 100%; height: 100%; top: 0; left: 0; opacity: 0; cursor: pointer; z-index: 2; }
+        .file-upload-icon { font-size: 3em; margin-bottom: 15px; display: block; }
+        .upload-hint { font-size: 0.9em; color: #666; margin-top: 10px; }
+        .upload-hint strong { color: var(--primary); }
+        
+        .stats-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin: 20px 0; padding: 20px; background: var(--gradient); border-radius: 12px; color: white; }
+        .stat-item { text-align: center; padding: 10px; }
+        .stat-value { font-size: 1.8em; font-weight: 700; display: block; }
+        .stat-label { font-size: 0.9em; opacity: 0.9; }
+        
+        .file-list { max-height: 500px; overflow-y: auto; margin: 25px 0; border: 2px solid #e2e8f0; border-radius: 12px; background: #fafafa; }
+        .file-list::-webkit-scrollbar { width: 8px; }
+        .file-list::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+        .file-list::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 4px; }
+        
+        .file-item { padding: 15px 20px; margin: 8px 15px; background: white; border-radius: 10px; display: flex; align-items: center; gap: 15px; border: 2px solid #e2e8f0; transition: all 0.3s; }
+        .file-item:hover { border-color: var(--primary); transform: translateX(5px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .file-preview { width: 70px; height: 70px; object-fit: cover; border-radius: 10px; border: 2px solid #e2e8f0; flex-shrink: 0; background: #f1f5f9; }
+        .file-info { flex: 1; min-width: 0; }
+        .file-original { font-weight: 600; color: var(--dark); margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .file-new { color: var(--primary); font-weight: 600; font-size: 1.05em; }
+        .file-meta { font-size: 0.85em; color: #666; margin-top: 3px; }
+        .file-actions { display: flex; gap: 8px; flex-shrink: 0; }
+        .action-btn { padding: 8px 16px; background: var(--primary); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 500; font-size: 0.9em; transition: all 0.2s; }
+        .action-btn:hover { background: var(--secondary); transform: translateY(-1px); }
+        .delete-btn { background: var(--danger); }
+        .delete-btn:hover { background: #c0392b; }
+        
+        .info-box { background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); border-left: 4px solid #2196f3; padding: 18px 20px; margin: 20px 0; border-radius: 0 10px 10px 0; font-size: 0.95em; }
+        .info-box strong { color: var(--dark); }
+        .success-box { background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%); border-left-color: var(--success); }
+        
+        .toggle-group { display: flex; align-items: center; gap: 12px; padding: 15px; background: var(--light); border-radius: 10px; margin: 10px 0; }
+        .toggle-switch { position: relative; width: 50px; height: 26px; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .toggle-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: 0.3s; border-radius: 26px; }
+        .toggle-slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px; background-color: white; transition: 0.3s; border-radius: 50%; }
+        input:checked + .toggle-slider { background: var(--gradient); }
+        input:checked + .toggle-slider:before { transform: translateX(24px); }
+        .toggle-label { font-weight: 500; color: var(--dark); }
+        .toggle-description { font-size: 0.85em; color: #666; margin-left: 62px; margin-top: 3px; }
+        
+        .loading { display: none; text-align: center; padding: 30px; color: var(--primary); font-weight: 600; font-size: 1.1em; }
+        .loading.active { display: block; }
+        .loading-spinner { display: inline-block; width: 24px; height: 24px; border: 3px solid rgba(102, 126, 234, 0.3); border-radius: 50%; border-top-color: var(--primary); animation: spin 1s linear infinite; margin-right: 10px; vertical-align: middle; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        .progress-container { margin: 20px 0; display: none; }
+        .progress-container.active { display: block; }
+        .progress-bar { height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden; margin-bottom: 8px; }
+        .progress-fill { height: 100%; background: var(--gradient); border-radius: 4px; transition: width 0.3s; width: 0%; }
+        .progress-text { text-align: center; font-size: 0.9em; color: #666; }
+        
+        footer { text-align: center; color: white; padding: 30px 20px; margin-top: 40px; opacity: 0.9; }
+        footer a { color: white; text-decoration: none; font-weight: 600; }
+        footer a:hover { text-decoration: underline; }
+        
+        @media (max-width: 768px) { 
+            header h1 { font-size: 2.2em; } 
+            .tab-content { padding: 25px; } 
+            .file-item { flex-direction: column; align-items: flex-start; } 
+            .file-actions { width: 100%; justify-content: flex-end; margin-top: 10px; } 
+            .button-group { flex-direction: column; } 
+            .button-group .generate-btn { width: 100%; justify-content: center; } 
+            .stats-bar { grid-template-columns: repeat(2, 1fr); } 
+        }
+    </style>
+</head>
+<body>
+ 
+    <!-- Top Ko-fi Button (Animated) -->
+    <div id="kofi-widget-container-top">
+        <script type='text/javascript'>kofiwidget2.init('Support me on Ko-fi', '#f573bd', 'P5P31Y57TZ');kofiwidget2.draw();</script>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1>📸 Image Renamer Pro</h1>
+            <p>Rename images with unique Names (Modern, Classic, Vintage, Unique, Popular) • Clean Metadata • No Duplicates</p>
+            <span class="version"> • Random Order • Lossless PNG</span>
+        </header>
+        
+        <!-- ✅ Adsterra Banner: Header (320x50 Mobile) -->
+        <div style="text-align: center; margin: 15px 0;">
+            <script>
+              atOptions = {
+                'key' : 'b9103b0d84f53412d408cec81ebc251a',
+                'format' : 'iframe',
+                'height' : 50,
+                'width' : 320,
+                'params' : {}
+              };
+            </script>
+            <script src="https://daubwhereupon.com/b9103b0d84f53412d408cec81ebc251a/invoke.js"></script>
+        </div>
+        
+        <!-- Image Tools Only -->
+        <div class="tab-content active">
+            <h2>🛠️ Professional Image Tools</h2>
+            <div class="stats-bar">
+                <div class="stat-item"><span class="stat-value">∞</span><span class="stat-label">Unique Names</span></div>
+                <div class="stat-item"><span class="stat-value">500</span><span class="stat-label">Max Files</span></div>
+                <div class="stat-item"><span class="stat-value">PNG</span><span class="stat-label">Lossless Output</span></div>
+                <div class="stat-item"><span class="stat-value">🔀</span><span class="stat-label">Random Order</span></div>
+            </div>
+            
+            <div class="info-box success-box">
+                <strong>✅ Features:</strong> Batch rename with UNIQUE names (NO DUPLICATES in ANY style) • Random assignment order • Convert to PNG (lossless) • Strip ALL metadata • Privacy-focused processing (client-side only)
+            </div> 
+            
+<!-- ✅ Adsterra Banner: In-content (invoke.js) -->
+<div style="text-align: center; margin: 20px 0;">
+    <script async="async" data-cfasync="false" src="https://daubwhereupon.com/d0b337103b05fc73a847a18f8920a29b/invoke.js"></script>
+    <div id="container-d0b337103b05fc73a847a18f8920a29b"></div>
+</div>
+            
+            <div class="file-upload" id="fileUploadArea">
+                <input type="file" id="fileInput" multiple accept="image/*">
+                <span class="file-upload-icon">📁</span>
+                <p style="font-size: 1.3em; margin-bottom: 10px; font-weight: 600;">Click to upload or drag & drop images</p>
+                <p class="upload-hint">Maximum <strong>500 files</strong> • Supports: JPG, JPEG, PNG, GIF, WebP, BMP</p>
+                <p class="upload-hint" style="margin-top: 5px;">🔐 All processing happens in your browser - files never leave your device</p>
+            </div>
+            
+            <div class="options">
+                <!-- BLOCK 1: NAME STYLE -->
+                <div class="option-group">
+                    <label>🎨 Name Style for Images:</label>
+                    <select id="imageNameStyle">
+                        <option value="modern">✨ Modern Names</option>
+                        <option value="classic">🎩 Classic</option>
+                        <option value="vintage">🕰️ Vintage</option>
+                        <option value="unique">💎 Unique</option>
+                        <option value="popular">🔥 Popular</option>
+                    </select>
+                </div>
+
+                <div class="option-group" id="fantasyRaceGroup" style="display:none;">
+                    <label>🐉 Fantasy Race / Species:</label>
+                    <select id="fantasyRace">
+                        <option value="elf">🧝 Elf</option>
+                        <option value="orc">👹 Orc</option>
+                        <option value="dwarf">⚒️ Dwarf</option>
+                        <option value="human">👤 Human</option>
+                        <option value="darkelf">🌙 Dark Elf</option>
+                        <option value="halfling">🏡 Halfling</option>
+                        <option value="gnome">🎭 Gnome</option>
+                        <option value="dragonborn">🐉 Dragonborn</option>
+                        <option value="tiefling">😈 Tiefling</option>
+                        <option value="fairy">🧚 Fairy</option>
+                    </select>
+                </div>
+                
+                <!-- BLOCK 3: GENDER -->
+                <div class="option-group">
+                    <label>👤 Name Gender:</label>
+                    <select id="nameGender">
+                        <option value="female">♀️ Female Names</option>
+                        <option value="male">♂️ Male Names</option>
+                        <option value="neutral">⚧ Neutral</option>
+                    </select>
+                </div>
+                
+                <!-- BLOCK 4: ADD NUMBERS -->
+                <div class="option-group">
+                    <label>🔢 Add Numbers:</label>
+                    <select id="addNumber">
+                        <option value="no" selected>No (just names)</option>
+                        <option value="yes">Yes (Name_001)</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="option-group" style="margin: 20px 0; border-color: var(--success);">
+                <label style="color: var(--success); font-size: 1.1em;">🔒 Privacy & Metadata Options</label>
+                <div class="toggle-group">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="cleanMetadata" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                    <div>
+                        <div class="toggle-label">Remove ALL Metadata (EXIF, GPS, Camera Info)</div>
+                        <div class="toggle-description">Strips location, device info, timestamps, and other privacy-sensitive data</div>
+                    </div>
+                </div>
+                <div class="toggle-group">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="removeAIMarkers" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                    <div>
+                        <div class="toggle-label">Remove AI Generation Markers</div>
+                        <div class="toggle-description">Attempts to remove metadata indicating AI-generated content</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="button-group">
+                <button class="generate-btn rename-all-btn" onclick="renameAllFiles()"><span>✨</span> Rename Images (Random Order)</button>
+                <button class="generate-btn clean-metadata-btn" onclick="cleanMetadataOnly()"><span>🔒</span> Clean Metadata Only</button>
+                <button class="generate-btn download-btn" onclick="downloadAllAsPNG()"><span>📥</span> Download All as PNG (ZIP)</button>
+            </div>
+
+            <!-- ✅ Adsterra Banner: Before Ko-fi -->
+            <div style="text-align: center; margin: 25px 0;">
+                <script src="https://daubwhereupon.com/54/1d/04/541d04fb84996728810e4ddac7ef4264.js"></script>
+            </div>
+
+            <!-- Bottom Ko-fi Button -->
+            <div class="kofi-section-bottom">
+                <div class="kofi-container-bottom">
+                    <script type='text/javascript'>kofiwidget2.init('Support me on Ko-fi', '#f573bd', 'P5P31Y57TZ');kofiwidget2.draw();</script>
+                </div>
+            </div>
+
+            <div id="loading" class="loading">
+                <span class="loading-spinner"></span>
+                <span id="loadingText">Processing images... Please wait...</span>
+            </div>
+            <div class="progress-container" id="progressContainer">
+                <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+                <div class="progress-text" id="progressText">0%</div>
+            </div>
+            <div id="fileList" class="file-list"></div>
+        </div>
+    </div>
+  
+    <script>
+        // ============================================
+        // NAME COMPONENTS (Standard Human Names)
+        // ============================================
+        const nameComponents = {
+            female: {
+                prefixes: ['A','Al','Am','An','Ar','As','Au','Be','Br','Ca','Ce','Ch','Cl','Co','Cr','Da','De','Di','Do','E','El','Em','En','Er','Es','Ev','Fa','Fe','Fi','Fl','Ga','Ge','Gi','Gl','Gr','Ha','He','Hi','Ho','I','Is','J','Ja','Je','Jo','Ju','K','Ka','Ke','Ki','Ko','L','La','Le','Li','Lo','Lu','M','Ma','Me','Mi','Mo','N','Na','Ne','Ni','No','O','Ol','P','Pa','Pe','Ph','Pi','Po','R','Ra','Re','Rh','Ri','Ro','S','Sa','Se','Sh','Si','So','St','Su','T','Ta','Te','Th','Ti','To','U','V','Va','Ve','Vi','Vo','W','Wa','We','Wh','Wi','Wo','Y','Z'],
+                roots: ['bella','lyn','rose','marie','anne','elle','ina','ette','ice','ity','ora','ara','ine','ise','ith','la','le','lia','lie','line','lise','lly','lyn','lynn','ma','me','mia','mie','mina','na','ne','nia','nie','nna','ra','re','ria','rie','rina','sa','se','sha','sia','sie','sina','ta','te','tia','tie','tina','va','ve','via','vie','vina','ya','ye','zia','zie'],
+                suffixes: ['','a','e','i','o','y','ah','eh','ih','oh','uh','ala','ana','ara','ela','ena','era','ila','ina','ira','ola','ona','ora','ula','una','ura','ella','enna','erra','illa','inna','irra','olla','onna','orra','ulla','unna','urra','bella','belle','billy','cilla','cille','cilly','della','delle','dilly','ella','elle','elly'],
+                classics: ['Elizabeth','Mary','Patricia','Jennifer','Linda','Barbara','Susan','Margaret','Dorothy','Lisa','Nancy','Karen','Betty','Helen','Sandra','Donna','Carol','Ruth','Sharon','Michelle','Laura','Sarah','Kimberly','Deborah','Jessica','Shirley','Cynthia','Angela','Melissa','Brenda','Amy','Rebecca','Virginia','Kathleen','Pamela','Martha','Debra','Amanda','Stephanie','Carolyn'],
+                modern: ['Emma','Olivia','Ava','Isabella','Sophia','Mia','Charlotte','Amelia','Harper','Evelyn','Abigail','Emily','Ella','Madison','Scarlett','Grace','Chloe','Victoria','Riley','Aria','Layla','Lily','Aubrey','Penelope','Sofia','Camila','Skylar','Lucy','Paisley','Everly'],
+                popular: ['Olivia','Emma','Charlotte','Amelia','Sophia','Isabella','Ava','Mia','Evelyn','Luna','Harper','Camila','Sofia','Scarlett','Elizabeth','Eleanor','Emily','Chloe','Mila','Violet','Penelope','Gianna','Aria','Abigail','Ella','Avery','Sofia','Elizabeth','Camila','Luna','Skyler','Nova','Isla','Aurora','Willow','Emilia','Stella','Zoey','Hazel','Ivy']
+            },
+            male: {
+                prefixes: ['A','Al','Am','An','Ar','As','Au','Be','Br','Ca','Ce','Ch','Cl','Co','Cr','Da','De','Di','Do','E','El','Em','En','Er','Es','Ev','Fa','Fe','Fi','Fl','Ga','Ge','Gi','Gl','Gr','Ha','He','Hi','Ho','I','Is','J','Ja','Je','Jo','Ju','K','Ka','Ke','Ki','Ko','L','La','Le','Li','Lo','Lu','M','Ma','Me','Mi','Mo','N','Na','Ne','Ni','No','O','Ol','P','Pa','Pe','Ph','Pi','Po','R','Ra','Re','Rh','Ri','Ro','S','Sa','Se','Sh','Si','So','St','Su','T','Ta','Te','Th','Ti','To','U','V','Va','Ve','Vi','Vo','W','Wa','We','Wh','Wi','Wo','Y','Z'],
+                roots: ['son','ton','don','ron','lon','mon','non','bon','con','fon','gon','hon','jon','kon','ard','ert','itt','old','ulf','win','wyn','bert','dred','fred','gard','hard','land','mond','nard','ward'],
+                suffixes: ['','er','or','ar','en','in','on','un','an','yn','son','ton','don','ron','lon','mon','ard','ert','itt','old','ulf','win','wyn','bert','dred','fred','gard','hard','land','mond','nard','ward'],
+                classics: ['James','John','Robert','Michael','William','David','Richard','Joseph','Thomas','Charles','Christopher','Daniel','Matthew','Anthony','Donald','Mark','Paul','Steven','Andrew','Kenneth','Joshua','Kevin','Brian','George','Edward','Ronald','Timothy','Jason','Jeffrey','Ryan'],
+                modern: ['Liam','Noah','Oliver','James','Elijah','William','Henry','Lucas','Benjamin','Theodore','Mateo','Levi','Sebastian','Daniel','Jack','Michael','Alexander','Owen','Asher','Samuel','Ethan','Leo','Jackson','Mason','Ezra','John','Hudson','Luca','Aiden','Joseph'],
+                popular: ['Liam','Noah','Oliver','James','Elijah','William','Henry','Lucas','Benjamin','Theodore','Mateo','Levi','Sebastian','Daniel','Jack','Michael','Alexander','Owen','Asher','Samuel','Ethan','Leo','Jackson','Mason','Ezra','John','Hudson','Luca','Aiden','Joseph','David','Wyatt','Julian','Grayson','Lincoln','Jaxon','Levi','Mateo','Jayden','Gabriel','Isaac','Anthony','Dylan','Luke','Maverick','Christopher','Josiah','Andrew','Theodore','Caleb','Ryan','Adrian','Miles','Eli','Nolan','Christian','Aaron','Cameron','Ezekiel','Colton','Luca','Landon','Hunter','Jonathan','Santiago','Axel','Easton','Cooper','Jeremiah','Angel','Roman','Connor','Jameson','Robert','Greyson','Jordan','Ian','Carson','Jaxson','Leonardo','Nicholas','Dominic','Austin','Everett','Brooks','Xavier','Kai','Jose','Parker','Adam','Jace','Wesley','Kayden','Silas','Bennett','Declan','Waylon','Weston','Evan','Emmett']
+            }
+        };
+
+        let uploadedFiles = [];
+        let usedNames = new Set();
+        const MAX_FILES = 500;
+
+        // Smart Name Generator for Standard Styles (NO DUPLICATES)
+        function generateSmartName(gender, style) {
+            const components = nameComponents[gender];
+            
+            // Try predefined lists first
+            if (style === 'classic' && components.classics.length > 0) {
+                const name = components.classics[Math.floor(Math.random() * components.classics.length)];
+                if (!usedNames.has(name)) return name;
+                // If duplicate, fall through to algorithmic
+            }
+            if (style === 'modern' && components.modern.length > 0) {
+                const name = components.modern[Math.floor(Math.random() * components.modern.length)];
+                if (!usedNames.has(name)) return name;
+                // If duplicate, fall through to algorithmic
+            }
+            if (style === 'popular' && components.popular.length > 0) {
+                const name = components.popular[Math.floor(Math.random() * components.popular.length)];
+                if (!usedNames.has(name)) return name;
+                // If duplicate, fall through to algorithmic
+            }
+
+            // ALGORITHMIC GENERATION (Infinite Unique Names)
+            // This ensures NO DUPLICATES even if the list is exhausted
+            const prefix = components.prefixes[Math.floor(Math.random() * components.prefixes.length)];
+            const root = components.roots[Math.floor(Math.random() * components.roots.length)];
+            const suffix = components.suffixes[Math.floor(Math.random() * components.suffixes.length)];
+            
+            const rawName = prefix + root + suffix;
+            const fullName = rawName.charAt(0).toUpperCase() + rawName.slice(1);
+            
+            if (fullName.length >= 3 && !usedNames.has(fullName)) {
+                return fullName;
+            } else {
+                // Recursion safety: try again if collision or too short
+                return generateSmartName(gender, style);
+            }
+        }
+
+        // File handling
+        function handleFiles(files) {
+            if (!files || files.length === 0) return;
+            if (files.length > MAX_FILES) {
+                showNotification(`Maximum ${MAX_FILES} files allowed. Please upload fewer files.`, 'error');
+                return;
+            }
+            uploadedFiles = Array.from(files).map(file => ({
+                file: file,
+                newName: null,
+                preview: URL.createObjectURL(file),
+                processed: false
+            }));
+            displayFileList();
+            showNotification(`✅ Loaded ${uploadedFiles.length} image(s)`, 'success');
+        }
+
+        function displayFileList() {
+            const container = document.getElementById('fileList');
+            container.innerHTML = '';
+            if (uploadedFiles.length === 0) {
+                container.innerHTML = '<p class="text-center" style="color: #999; padding: 40px;">No files uploaded yet</p>';
+                return;
+            }
+            uploadedFiles.forEach((fileObj, index) => {
+                const div = document.createElement('div');
+                div.className = 'file-item';
+                div.innerHTML = `
+                    <input type="checkbox" class="checkbox" id="file-${index}" checked>
+                    <img class="file-preview" src="${fileObj.preview}" alt="${fileObj.file.name}" onerror="this.src='image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2270%22 height=%2270%22><rect fill=%22%23e2e8f0%22 width=%2270%22 height=%2270%22/><text x=%2250%%22 y=%2250%%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 fill=%22%23667eea%22 font-size=%2224%22>🖼️</text></svg>'">
+                    <div class="file-info">
+                        <div class="file-original">${fileObj.file.name}</div>
+                        <div class="file-new" style="color: ${fileObj.newName ? '#4caf50' : '#999'}">${fileObj.newName ? `→ ${fileObj.newName}` : 'Not renamed yet'}</div>
+                        ${fileObj.metadataInfo ? `<div class="file-meta">${fileObj.metadataInfo}</div>` : ''}
+                    </div>
+                    <div class="file-actions">
+                        <button class="action-btn delete-btn" onclick="removeFile(${index})">Remove</button>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function removeFile(index) {
+            if (uploadedFiles[index].newName) usedNames.delete(uploadedFiles[index].newName.split('.')[0]);
+            URL.revokeObjectURL(uploadedFiles[index].preview);
+            uploadedFiles.splice(index, 1);
+            displayFileList();
+        }
+
+        function getUniqueName(style, gender) {
+            let name;
+            let attempts = 0;
+            
+            do {
+                name = generateSmartName(gender, style);
+                attempts++;
+            } while (usedNames.has(name) && attempts < 500);
+            
+            usedNames.add(name);
+            return name;
+        }
+
+        // ============================================
+        // RANDOM ORDER RENAMING (SHUFFLED)
+        // ============================================
+        function renameAllFiles() {
+            if (uploadedFiles.length === 0) { showNotification('Please upload files first.', 'error'); return; }
+            
+            const style = document.getElementById('imageNameStyle').value;
+            const gender = document.getElementById('nameGender').value;
+            const addNumber = document.getElementById('addNumber').value === 'yes';
+            
+            usedNames.clear();
+            
+            const indices = uploadedFiles.map((_, i) => i);
+            for (let i = indices.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [indices[i], indices[j]] = [indices[j], indices[i]];
+            }
+            
+            indices.forEach((originalIndex, sequenceNumber) => {
+                const fileObj = uploadedFiles[originalIndex];
+                const baseName = getUniqueName(style, gender);
+                
+                if (addNumber) {
+                    fileObj.newName = `${baseName}_${String(sequenceNumber + 1).padStart(3, '0')}.png`;
+                } else {
+                    let finalName = `${baseName}.png`;
+                    let counter = 1;
+                    while (uploadedFiles.some((f, idx) => idx !== originalIndex && f.newName === finalName)) {
+                        finalName = `${baseName}_${counter}.png`;
+                        counter++;
+                    }
+                    fileObj.newName = finalName;
+                }
+            });
+            
+            displayFileList();
+            showNotification(`✅ Successfully renamed ${uploadedFiles.length} images in RANDOM order with UNIQUE names!`, 'success');
+        }
+
+        // LOSSLESS metadata cleaning
+        async function cleanMetadataOnly() {
+            if (uploadedFiles.length === 0) { showNotification('Please upload files first.', 'error'); return; }
+            const loading = document.getElementById('loading');
+            const progressContainer = document.getElementById('progressContainer');
+            const progressFill = document.getElementById('progressFill');
+            const progressText = document.getElementById('progressText');
+            loading.classList.add('active');
+            progressContainer.classList.add('active');
+            
+            try {
+                for (let i = 0; i < uploadedFiles.length; i++) {
+                    const fileObj = uploadedFiles[i];
+                    if (fileObj.processed) continue;
+                    
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    const img = new Image();
+                    await new Promise((resolve, reject) => {
+                        img.onload = resolve;
+                        img.onerror = reject;
+                        img.src = fileObj.preview;
+                    });
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    ctx.drawImage(img, 0, 0);
+                    
+                    fileObj.cleanedData = canvas.toDataURL('image/png').split(',')[1];
+                    fileObj.metadataInfo = '✅ Metadata cleaned (lossless)';
+                    fileObj.processed = true;
+                    
+                    const progress = Math.round(((i + 1) / uploadedFiles.length) * 100);
+                    progressFill.style.width = `${progress}%`;
+                    progressText.textContent = `${progress}%`;
+                }
+                displayFileList();
+                showNotification(`✅ Metadata cleaned for ${uploadedFiles.length} images (lossless PNG)!`, 'success');
+            } catch (error) {
+                console.error('Error:', error);
+                showNotification('Error cleaning metadata. Please try again.', 'error');
+            } finally {
+                loading.classList.remove('active');
+                progressContainer.classList.remove('active');
+            }
+        }
+
+        // LOSSLESS download
+        async function downloadAllAsPNG() {
+            if (uploadedFiles.length === 0) { showNotification('Please upload files first.', 'error'); return; }
+            const renamedFiles = uploadedFiles.filter(f => f.newName);
+            if (renamedFiles.length === 0) { showNotification('Please rename files first.', 'error'); return; }
+            
+            const loading = document.getElementById('loading');
+            const progressContainer = document.getElementById('progressContainer');
+            const progressFill = document.getElementById('progressFill');
+            const progressText = document.getElementById('progressText');
+            loading.classList.add('active');
+            progressContainer.classList.add('active');
+            document.getElementById('loadingText').textContent = 'Converting images to lossless PNG...';
+            
+            try {
+                const zip = new JSZip();
+                const cleanMetadata = document.getElementById('cleanMetadata').checked;
+                const removeAI = document.getElementById('removeAIMarkers').checked;
+                
+                for (let i = 0; i < renamedFiles.length; i++) {
+                    const fileObj = renamedFiles[i];
+                    let pngData;
+                    
+                    if (cleanMetadata || removeAI) {
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+                        const img = new Image();
+                        await new Promise((resolve, reject) => {
+                            img.onload = resolve;
+                            img.onerror = reject;
+                            img.src = fileObj.preview;
+                        });
+                        canvas.width = img.width;
+                        canvas.height = img.height;
+                        ctx.drawImage(img, 0, 0);
+                        pngData = canvas.toDataURL('image/png').split(',')[1];
+                    } else {
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+                        const img = new Image();
+                        await new Promise((resolve, reject) => {
+                            img.onload = resolve;
+                            img.onerror = reject;
+                            img.src = fileObj.preview;
+                        });
+                        canvas.width = img.width;
+                        canvas.height = img.height;
+                        ctx.drawImage(img, 0, 0);
+                        pngData = canvas.toDataURL('image/png').split(',')[1];
+                    }
+                    zip.file(fileObj.newName, pngData, {base64: true});
+                    
+                    const progress = Math.round(((i + 1) / renamedFiles.length) * 100);
+                    progressFill.style.width = `${progress}%`;
+                    progressText.textContent = `${progress}%`;
+                }
+                
+                const content = await zip.generateAsync({type: 'blob'});
+                const url = window.URL.createObjectURL(content);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'renamed_images_unique.zip';
+                a.click();
+                window.URL.revokeObjectURL(url);
+                showNotification(`✅ Downloaded ${renamedFiles.length} lossless PNG images!`, 'success');
+            } catch (error) {
+                console.error('Error:', error);
+                showNotification('Error downloading files. Please try again.', 'error');
+            } finally {
+                loading.classList.remove('active');
+                progressContainer.classList.remove('active');
+            }
+        }
+
+        function showNotification(message, type = 'info') {
+            const existing = document.querySelector('.success-message');
+            if (existing) existing.remove();
+            const notification = document.createElement('div');
+            notification.className = `success-message ${type === 'error' ? 'warning-box' : ''}`;
+            notification.style.background = type === 'error' ? 'var(--danger)' : '';
+            notification.innerHTML = `<span>${type === 'error' ? '⚠️' : '✅'}</span> ${message}`;
+            const fileList = document.getElementById('fileList');
+            fileList.insertBefore(notification, fileList.firstChild);
+            setTimeout(() => notification.remove(), 5000);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const fileUpload = document.getElementById('fileUploadArea');
+            const fileInput = document.getElementById('fileInput');
+            
+            fileUpload.addEventListener('click', function(e) {
+                if (e.target === fileUpload || e.target.closest('.file-upload-icon') || e.target.closest('p')) {
+                    fileInput.click();
+                }
+            });
+            
+            fileInput.addEventListener('change', function(e) {
+                if (this.files && this.files.length > 0) {
+                    handleFiles(this.files);
+                    this.value = '';
+                }
+            });
+            
+            fileUpload.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                fileUpload.classList.add('dragover');
+            });
+            
+            fileUpload.addEventListener('dragenter', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                fileUpload.classList.add('dragover');
+            });
+            
+            fileUpload.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                if (e.relatedTarget && !fileUpload.contains(e.relatedTarget)) {
+                    fileUpload.classList.remove('dragover');
+                }
+            });
+            
+            fileUpload.addEventListener('drop', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                fileUpload.classList.remove('dragover');
+                if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                    handleFiles(e.dataTransfer.files);
+                    fileInput.value = '';
+                }
+            });
+            
+            document.addEventListener('dragover', function(e) { e.preventDefault(); });
+            document.addEventListener('drop', function(e) { e.preventDefault(); });
+            
+        });
+
+        window.addEventListener('beforeunload', () => {
+            uploadedFiles.forEach(f => {
+                if (f.preview) URL.revokeObjectURL(f.preview);
+            });
+        });
+    </script>
+ 
+    <footer>
+        <p>✨ Image Renamer Pro v3.0 Lite • All processing happens locally</p>
+        <div style="margin-top: 15px; font-size: 0.9em;">
+            <a href="/privacy.html" style="color: white; margin: 0 10px; text-decoration: underline;">Privacy Policy</a> | 
+            <a href="/terms.html" style="color: white; margin: 0 10px; text-decoration: underline;">Terms of Service</a> | 
+            <a href="/cookies.html" style="color: white; margin: 0 10px; text-decoration: underline;">Cookie Policy</a>
+        </div>
+        <p style="margin-top: 10px; font-size: 0.85em; opacity: 0.8;">Made with ❤️ for creators, writers, and privacy-conscious users</p>
+    </footer>
+
+    </body>
+    </html>
