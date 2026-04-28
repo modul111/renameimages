@@ -180,12 +180,15 @@
 </head>
 <body> 
     
-   <!-- 📍 ВЕРТИКАЛЬНИЙ БАНЕР (Поверх контенту, але гортається) -->
+   <!-- 📍 ВЕРТИКАЛЬНИЙ БАНЕР (Гортається зі сторінкою) -->
 <div id="left-vertical-ad" class="adsterra-banner" style="
-    position: absolute;
+    position: sticky;
     top: 20px;
     left: 20px;
+    float: left;
     z-index: 1000;
+    margin-right: 20px;
+    margin-bottom: 20px;
 ">
     <script>
       atOptions = { 'key' : '92a27733420db52bddb381b5886cd5f8', 'format' : 'iframe', 'height' : 300, 'width' : 160, 'params' : {} };
