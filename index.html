@@ -178,25 +178,20 @@
         }
     </style>
 </head>
-<body>
+<body> 
     
- <body>
-    
-    <!-- 📍 ВЕРТИКАЛЬНИЙ БАНЕР (вставлено на початку) -->
-    <div id="left-vertical-ad" class="adsterra-banner" style="
-        position: relative; 
-        float: left;
-        margin: 10px;
-    ">
-        <script>
-          atOptions = { 'key' : '92a27733420db52bddb381b5886cd5f8', 'format' : 'iframe', 'height' : 300, 'width' : 160, 'params' : {} };
-        </script>
-        <script src="https://daubwhereupon.com/92a27733420db52bddb381b5886cd5f8/invoke.js"></script>
-    </div>
-
-    <!-- Решта твого сайту... -->
-    <div class="container">
-        ...
+   <!-- 📍 ВЕРТИКАЛЬНИЙ БАНЕР (Поверх контенту, але гортається) -->
+<div id="left-vertical-ad" class="adsterra-banner" style="
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 1000;
+">
+    <script>
+      atOptions = { 'key' : '92a27733420db52bddb381b5886cd5f8', 'format' : 'iframe', 'height' : 300, 'width' : 160, 'params' : {} };
+    </script>
+    <script src="https://daubwhereupon.com/92a27733420db52bddb381b5886cd5f8/invoke.js"></script>
+</div>
         
     <!-- Top Ko-fi Button (Animated) -->
     <div id="kofi-widget-container-top">
